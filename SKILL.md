@@ -256,8 +256,7 @@ news-data/
 ```
 
 **注意事项**：
-- 列表页 `tv.cctv.com/lm/xwlb/` 始终显示最新一天；历史日期可能无法直接通过脚本获取
-- 如果脚本对历史日期返回 0 条，改用 WebSearch 搜索 "新闻联播 YYYYMMDD" 发现详情页链接，再用 `--urls` 模式传入脚本
+- 脚本使用 `tv.cctv.com/lm/xwlb/day/YYYYMMDD.shtml` URL 模式，支持任意历史日期
 - 如果网络不可用，提示用户手动将新闻文本保存到目录后继续分析
 
 ### 第二步：内容索引
