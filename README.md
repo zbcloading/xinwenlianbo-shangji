@@ -113,9 +113,3 @@ xinwenlianbo-shangji/
 ## License
 
 MIT © 2026
-
----
-
-## 致谢
-
-- [nuwa-skill](https://github.com/alchaincyf/nuwa-skill) — Skill 发布结构参考
