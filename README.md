@@ -16,11 +16,13 @@
 
 | 分析环节 | 工具 |
 |---------|------|
+| **自动抓取** | `scripts/fetch_xwlb.py` — 从 CCTV 官网抓取指定日期文字稿 |
 | **信号提取** | 四层信号体系（宏观定调 → 行业落地 → 风险规避 → 信息结构） |
 | **措辞解码** | 五套密码本（双边会谈 / 发言人表态 / 关系定位 / 经济政策 / 会议总结） |
 | **深度归因** | 三问模型（为什么是现在？为什么是这个方向？普通人机会在哪？） |
 | **交叉验证** | 多密码本联动判读，3+ 信号共振才下结论 |
 | **量化评分** | 五维打分（明确性 / 层级 / 可落地性 / 一致性 / 时间窗口） |
+| **周期聚合** | 日/周/月/季度维度：频次统计 / 趋势检测 / 优先级排序 |
 
 ---
 
@@ -38,7 +40,11 @@ git clone https://github.com/zbcloading/xinwenlianbo-shangji.git ~/.workbuddy/sk
 
 **方式二：手动复制**
 
-下载 `SKILL.md` 和 `references/` 目录，放到你的 Agent Skills 目录中。
+下载 `SKILL.md`、`scripts/` 和 `references/` 目录，放到 Agent Skills 目录中。抓取脚本需要 Python 依赖：
+
+```bash
+pip install requests beautifulsoup4
+```
 
 ### 使用
 
@@ -56,17 +62,37 @@ git clone https://github.com/zbcloading/xinwenlianbo-shangji.git ~/.workbuddy/sk
 
 Skill 会自动激活，走完完整的六步分析管线，输出结构化报告。
 
+### 周期性分析
+
+支持按日/周/月/季度汇总分析：
+
+```
+分析本周新闻联播的商机
+分析本月政策趋势
+看看本季度有哪些投资信号
+```
+
+Skill 会先自动从央视网抓取对应周期的新闻文字稿，然后逐日提取信号，跨日聚合频次/趋势/优先级，输出周期性商机报告。
+
+也可以单独使用抓取脚本：
+
+```bash
+python scripts/fetch_xwlb.py --week --out ./news-data
+```
+
 ---
 
 ## Skill 结构
 
 ```
 xinwenlianbo-shangji/
-├── SKILL.md                      # Agent Skill 定义（分析工作流 + 输出模板）
+├── SKILL.md                      # Agent Skill 定义
+├── scripts/
+│   └── fetch_xwlb.py             # 新闻抓取脚本
 ├── references/
 │   └── methodology.md            # 完整方法论（含五套措辞密码本 A-E）
-├── README.md                     # 本文件
-└── LICENSE                       # MIT
+├── README.md
+└── LICENSE
 ```
 
 ---

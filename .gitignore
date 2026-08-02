@@ -5,3 +5,4 @@ Thumbs.db
 __pycache__/
 .workbuddy/
 node_modules/
+news-data/
