@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+*.zip
+*.pyc
+__pycache__/
+.workbuddy/
+node_modules/
