@@ -2,7 +2,7 @@
 
 > 新闻联播不是新闻，是加密的政策信号源。这条 Skill 帮你解码。
 
-一个 WorkBuddy / Claude Code / CodeBuddy 兼容的 Agent Skill，基于五道口老实人的方法论，将新闻联播、外交辞令、政策文件中的措辞转化为结构化的商机解读报告。
+一个 WorkBuddy / Claude Code / CodeBuddy 兼容的 Agent Skill，将新闻联播、外交辞令、政策文件中的措辞转化为结构化的商机解读报告。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Compatible-green)]()
@@ -118,5 +118,4 @@ MIT © 2026
 
 ## 致谢
 
-- [五道口老实人](https://www.douyin.com/video/7171512361604386080) — 原始方法论创作者
 - [nuwa-skill](https://github.com/alchaincyf/nuwa-skill) — Skill 发布结构参考
