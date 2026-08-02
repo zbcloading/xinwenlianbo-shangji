@@ -147,8 +147,27 @@ def save_news(base_dir: str, date_str: str, idx: int, title: str, text: str):
     return str(filepath)
 
 
-def process_date(date_str: str, base_dir: str, urls: list[str] | None = None) -> int:
+def check_existing(base_dir: str, date_str: str) -> bool:
+    """Check if data already exists for a given date. Returns True if exists and has files."""
+    yyyy, mm, dd = date_str[:4], date_str[4:6], date_str[6:8]
+    date_dir = Path(base_dir) / yyyy / mm / dd
+    if date_dir.is_dir():
+        files = list(date_dir.glob("*.md"))
+        if files:
+            return True
+    return False
+
+
+def process_date(date_str: str, base_dir: str, urls: list[str] | None = None,
+                 force: bool = False) -> int:
     """Process a single date. Returns number of items saved."""
+    # Skip if data already exists (unless --force)
+    if not urls and not force and check_existing(base_dir, date_str):
+        yyyy, mm, dd = date_str[:4], date_str[4:6], date_str[6:8]
+        existing = len(list((Path(base_dir) / yyyy / mm / dd).glob("*.md")))
+        print(f"  [skip] {existing} files already exist, use --force to re-download")
+        return existing
+
     items: list[dict] = []
 
     if urls:
@@ -234,11 +253,12 @@ def main():
     group.add_argument("--week", action="store_true", help="抓取最近一周")
     group.add_argument("--month", action="store_true", help="抓取最近30天")
     group.add_argument("--quarter", action="store_true", help="抓取最近90天")
-    group.add_argument("--date", type=str, help="抓取指定日期 (YYYYMMDD)")
+    group.add_argument("--date", type=str, nargs="+", help="抓取指定日期 (YYYYMMDD)，可多个")
     group.add_argument("--urls", type=str, help="直接抓取 URL 列表（逗号分隔）")
     parser.add_argument("--out", type=str, default="./news-data", help="输出目录")
     parser.add_argument("--date-str", type=str, default=None,
                         help="配合 --urls 使用时指定日期 (YYYYMMDD)")
+    parser.add_argument("--force", action="store_true", help="强制重新下载，忽略已有数据")
     args = parser.parse_args()
 
     base_dir = os.path.abspath(args.out)
@@ -253,7 +273,7 @@ def main():
         dates = [date_str]
         print(f"URL 模式: {len(urls)} 条链接")
     elif args.date:
-        dates = [args.date]
+        dates = args.date
     else:
         period = "today"
         for p in ["today", "yesterday", "week", "month", "quarter"]:
@@ -264,15 +284,26 @@ def main():
         print(f"周期模式: {period} ({len(dates)} 天)")
 
     total = 0
+    skipped_days = 0
     for date_str in dates:
         print(f"\n--- {date_str[:4]}-{date_str[4:6]}-{date_str[6:8]} ---")
         try:
-            n = process_date(date_str, base_dir, urls if urls else None)
+            # Check before fetching
+            if not urls and not args.force and check_existing(base_dir, date_str):
+                yyyy, mm, dd = date_str[:4], date_str[4:6], date_str[6:8]
+                existing = len(list((Path(base_dir) / yyyy / mm / dd).glob("*.md")))
+                print(f"  [skip] {existing} files already exist, use --force to re-download")
+                skipped_days += 1
+                continue
+            n = process_date(date_str, base_dir, urls if urls else None, force=args.force)
             total += n
         except Exception as e:
             print(f"  [fatal] {e}")
 
-    print(f"\n完成! 共保存 {total} 条新闻到 {base_dir}")
+    msg = f"完成! 新保存 {total} 条新闻"
+    if skipped_days:
+        msg += f"，跳过 {skipped_days} 天（已有数据）"
+    print(f"\n{msg} 到 {base_dir}")
 
 
 if __name__ == "__main__":
