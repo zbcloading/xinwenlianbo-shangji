@@ -33,6 +33,7 @@ HEADERS = {
 }
 
 LIST_URL = "https://tv.cctv.com/lm/xwlb/"
+LIST_URL_DATE = "https://tv.cctv.com/lm/xwlb/day/{date}.shtml"
 TIMEOUT = 15
 RETRY_SLEEP = 2
 MAX_RETRIES = 2
@@ -155,10 +156,11 @@ def process_date(date_str: str, base_dir: str, urls: list[str] | None = None) ->
         for url in urls:
             items.append({"title": "", "url": url, "date": date_str})
     else:
-        # Auto-discovery mode — fetch listing page
-        print(f"  fetching listing page...")
+        # Auto-discovery mode — fetch date-specific listing page
+        list_url = LIST_URL_DATE.format(date=date_str)
+        print(f"  fetching {list_url}")
         try:
-            html = fetch_html(LIST_URL)
+            html = fetch_html(list_url)
             items = parse_listing(html, date_str)
         except Exception as e:
             print(f"  listing fetch failed: {e}")
