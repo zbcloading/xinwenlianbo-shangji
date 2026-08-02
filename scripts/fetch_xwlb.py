@@ -235,6 +235,22 @@ def generate_date_range(period: str) -> list[str]:
             d = today - timedelta(days=i)
             dates.append(d.strftime("%Y%m%d"))
         return dates
+    elif period == "last-month":
+        # Previous complete calendar month (e.g. July 1-31 when today is in August)
+        first_of_this_month = today.replace(day=1)
+        last_day_of_prev_month = first_of_this_month - timedelta(days=1)
+        year = last_day_of_prev_month.year
+        month = last_day_of_prev_month.month
+        # Days in that month
+        if month == 12:
+            next_month_first = datetime(year + 1, 1, 1)
+        else:
+            next_month_first = datetime(year, month + 1, 1)
+        days_in_month = (next_month_first - timedelta(days=1)).day
+        dates = []
+        for d in range(1, days_in_month + 1):
+            dates.append(f"{year}{month:02d}{d:02d}")
+        return dates
     elif period == "quarter":
         dates = []
         for i in range(90, 0, -1):
@@ -251,7 +267,8 @@ def main():
     group.add_argument("--today", action="store_true", help="抓取最新一期")
     group.add_argument("--yesterday", action="store_true", help="抓取昨天")
     group.add_argument("--week", action="store_true", help="抓取最近一周")
-    group.add_argument("--month", action="store_true", help="抓取最近30天")
+    group.add_argument("--month", action="store_true", help="抓取最近30天（滚动窗口）")
+    group.add_argument("--last-month", action="store_true", help="抓取上个月（完整自然月，如7月1-31日）")
     group.add_argument("--quarter", action="store_true", help="抓取最近90天")
     group.add_argument("--date", type=str, nargs="+", help="抓取指定日期 (YYYYMMDD)，可多个")
     group.add_argument("--urls", type=str, help="直接抓取 URL 列表（逗号分隔）")
@@ -276,7 +293,7 @@ def main():
         dates = args.date
     else:
         period = "today"
-        for p in ["today", "yesterday", "week", "month", "quarter"]:
+        for p in ["today", "yesterday", "week", "month", "last-month", "quarter"]:
             if getattr(args, p):
                 period = p
                 break
