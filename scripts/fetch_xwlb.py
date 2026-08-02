@@ -293,9 +293,9 @@ def main():
         dates = args.date
     else:
         period = "today"
-        for p in ["today", "yesterday", "week", "month", "last-month", "quarter"]:
+        for p in ["today", "yesterday", "week", "month", "last_month", "quarter"]:
             if getattr(args, p):
-                period = p
+                period = p if p != "last_month" else "last-month"
                 break
         dates = generate_date_range(period)
         print(f"周期模式: {period} ({len(dates)} 天)")
